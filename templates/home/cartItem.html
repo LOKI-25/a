@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load static %}
+   <section style="text-align: center;margin-top:5%">
+    <div class="container-lg">
+        <div class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-md-2">
+            <div class="col" style="margin-top:40px;">
+                <img src="{% static 'images/img1.jfif' %}" alt="">
+                <br><br>
+                <button>-</button>
+                <input type="text" class="input-number" value="1" min="0" max="100" style="width:50px;text-align:center">
+                <button>+</button> 
+                
+            </div>
+            <div class="col" style="margin-top:40px;text-align: left;">
+                <h5>Product Name:Vegetables</h5>
+                <h5>Price:₹60</h5>
+                <h5>Discount:10%</h5><br>
+                <button class="btn btn-danger">Remove</button>
+                <button class="btn btn-success">Buy Now</button>
+
+            </div>
+            <div class="col" style="margin-top:40px;">
+                <img src="{% static 'images/img1.jfif' %}" alt="">
+                <br><br>
+                <button>-</button>
+                <input type="text" class="input-number" value="1" min="0" max="100" style="width:50px;text-align:center">
+                <button>+</button> 
+                
+            </div>
+            <div class="col" style="margin-top:40px;text-align: left;">
+                <h5>Product Name:Vegetables</h5>
+                <h5>Price:₹60</h5>
+                <h5>Discount:10%</h5><br>
+                <button class="btn btn-danger">Remove</button>
+                <button class="btn btn-success">Buy Now</button>
+
+            </div>
+            
+            </div>
+            </div>
+           
+           
+   </section>
+   <section>
+    <div class="col-lg-4 offset-lg-4">
+        <div class="checkout">
+            <ul>
+                <li class="subtotal">Subtotal
+                <span>₹600</span>
+                </li>
+                <li class="cart-total">Total
+                    <span>₹600</span>
+                </li>
+            </ul>
+        <a href="#" class="proceed-btn">Proceed to Checkout</a>
+        </div>
+    </div>
+    </div>
+</section>
+{% endblock %}
