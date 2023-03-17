@@ -22,8 +22,10 @@ def product(request,slug,id):
 
 def productView(request,slug):
     product=Product.objects.filter(product_slug=slug)
+    # reviews=ReviewRating.objects.filter(product=product)
     context={
         'sitem':product,
+        # 'reviews':reviews
     }
     return render(request,"home/productView.html",context)
 

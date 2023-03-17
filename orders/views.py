@@ -65,8 +65,8 @@ def payments(request):
     # Send order number and transaction id back to sendData method via JsonResponse
     def send_order(mobile):
         print("FUNCTION CALLED")
-        account_sid = 'AC5da717c5d9ef46b543a1dd7ef811d0c9'
-        auth_token = '1730f937310c6880f9af6839c392a476'
+        # account_sid = 'AC5da717c5d9ef46b543a1dd7ef811d0c9'
+        # auth_token = 'f9884ec91a0034fceefbe67e7b32a7d4'
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
@@ -99,6 +99,7 @@ def place_order(request, total=0, quantity=0):
    
 
     for cart_item in cart_items:
+        print("}}}}}}}}}}}}}}}}}}",cart_item.product.discount,   cart_item.quantity)
         total += (cart_item.product.discount * cart_item.quantity)
         quantity += cart_item.quantity
     grand_total = total 
@@ -151,9 +152,11 @@ def order_complete(request):
     try:
         order = Order.objects.get(order_number=order_number, is_ordered=True)
         ordered_products = OrderProduct.objects.filter(order_id=order.id)
+        print("|||||||||||||||||||||",ordered_products)
 
         subtotal = 0
         for i in ordered_products:
+            print(i.product_price, i.quantity)
             subtotal += i.product_price * i.quantity
 
         payment = Payment.objects.get(payment_id=transID)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.db.models import Avg
 # Create your models here.
 
 class Category(models.Model):
@@ -36,6 +37,13 @@ class Product(models.Model):
         super(Product,self).save(*args,**kwargs)
     def __str__(self):
         return self.product_name
+    
+    def average_rating(self):
+        all_ratings = ReviewRating.objects.filter(product=self, status=True).aggregate(average=Avg('rating'))
+        avg = 0
+        if all_ratings['average'] is not None:
+            avg = all_ratings['average']
+        return avg
 
 
 class Cart(models.Model):

@@ -24,8 +24,8 @@ def cart(request):
     return render(request, 'accounts/cart.html')
 def send_otp(mobile , otp):
     print("FUNCTION CALLED")
-    account_sid = 'AC5da717c5d9ef46b543a1dd7ef811d0c9'
-    auth_token = '1730f937310c6880f9af6839c392a476'
+    # account_sid = 'AC5da717c5d9ef46b543a1dd7ef811d0c9'
+    # auth_token = 'f9884ec91a0034fceefbe67e7b32a7d4'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
@@ -102,7 +102,6 @@ def register(request):
                 profile.save()
                 print('user created')
                 return redirect('login')
-
         else:
             messages.info(request,'Password is not matched')
             return render(request,'accounts/register.html',{'success':True})
