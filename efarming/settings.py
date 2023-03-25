@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'efarming_db',
         'USER':'postgres',
-        'PASSWORD':'lokesh',
+        'PASSWORD':'*****',
         'HOST':'localhost',
     }
 }
@@ -139,6 +139,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR/ "media"
 
-RAZORPAY_API_KEY = 'rzp_test_9jW4S6SDvz59yy'
-RAZORPAY_API_SECRET_KEY = 'M92ebWLUu3Hw1afTJQXZhJzk'
+
 cache.clear()
