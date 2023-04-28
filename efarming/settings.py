@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'efarming_db',
         'USER':'postgres',
-        'PASSWORD':'lokesh',
+        'PASSWORD':'*****',
         'HOST':'localhost',
     }
 }
