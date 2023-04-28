@@ -1,12 +1,5 @@
 
 from django.shortcuts import render , redirect
-'''
-def register(request):
-    return render(request,"accounts/register.html")
-
-def login(request):
-    return render(request,"accounts/login.html")
-'''
 from django.contrib.auth.models import User,auth
 from django.contrib import messages
 from .models import Profile
@@ -24,14 +17,14 @@ def cart(request):
     return render(request, 'accounts/cart.html')
 def send_otp(mobile , otp):
     print("FUNCTION CALLED")
-    # account_sid = 'AC5da717c5d9ef46b543a1dd7ef811d0c9'
-    # auth_token = 'f9884ec91a0034fceefbe67e7b32a7d4'
+    account_sid = ''
+    auth_token = ''
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
                                                     body=f'The otp is {otp}',
                                     
-                                                    from_='+15739953871',
+                                                    from_='',
                                                     to=f'+91{mobile}'
                                                 )
 
@@ -43,7 +36,6 @@ def send_otp(mobile , otp):
 def login_attempt(request):
     if request.method == 'POST':
         mobile = request.POST.get('mobile')
-        
         user = Profile.objects.filter(mobile = mobile).first()
         
         if user is None:
@@ -140,11 +132,8 @@ def otp(request):
             context = {'message' : 'Wrong OTP' , 'class' : 'danger','mobile':mobile }
             return render(request,'accounts/otp.html' , context)
             
-        
     return render(request,'accounts/otp.html' , context)
 
 def logout(request):
-    # logout is inbuilt fn 
-    # logout the user who is logged in
     auth.logout(request) 
     return redirect("/")

@@ -18,6 +18,8 @@ class Product(models.Model):
     ('kg','Kilogram'),
     ('gm', 'Gram'),
     ('units','units'),
+    ('litre','Litre'),
+    ('units','units'),
 )
     product_name=models.CharField(max_length=100)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
@@ -29,6 +31,11 @@ class Product(models.Model):
     price_for_min_quantity=models.IntegerField()
     discount=models.IntegerField(blank=True,null=True,default=0)
     product_image=models.ImageField(upload_to='product_images')
+    product_image1=models.ImageField(upload_to='product_images1', blank=True, null=True)
+    product_image2=models.ImageField(upload_to='product_images2', blank=True, null=True)
+    product_image3=models.ImageField(upload_to='product_images3', blank=True, null=True)
+    product_image4=models.ImageField(upload_to='product_images4', blank=True, null=True)
+
     is_available=models.BooleanField(default=True)
     created_date=models.DateTimeField(auto_now_add=True)
     modified_date=models.DateTimeField(auto_now=True)
@@ -38,7 +45,7 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
     
-    def average_rating(self):
+    def rating(self):
         all_ratings = ReviewRating.objects.filter(product=self, status=True).aggregate(average=Avg('rating'))
         avg = 0
         if all_ratings['average'] is not None:
@@ -91,4 +98,13 @@ class ReviewRating(models.Model):
         return self.subject
 
 
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    phone = models.CharField(max_length=100)
+    subject = models.CharField(max_length=100)
+    message = models.TextField(max_length=1000)
+
+    def __str__(self):
+        return self.subject
 

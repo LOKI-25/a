@@ -27,6 +27,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     order_number = models.CharField(max_length=20,null=True,blank=True)
+    deliver_otp=models.CharField(max_length=10,null=True,blank=True)
 
     def __str__(self):
         return self.email

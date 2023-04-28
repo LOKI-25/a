@@ -1,6 +1,7 @@
 from home.forms import ReviewForm
 from django.shortcuts import render,redirect,get_object_or_404
 from home.models import *
+from orders.models import *
 from django.contrib.postgres.search import SearchVector
 from django.shortcuts import render,redirect
 from django.contrib import messages
@@ -21,17 +22,19 @@ def product(request,slug,id):
     return render(request,'home/product.html',context)
 
 def productView(request,slug):
-    product=Product.objects.filter(product_slug=slug)
+    product=Product.objects.filter(product_slug=slug).order_by('discount')
+    # review=product.average_rating()
+    print("}}}}}}}}",product)
     # reviews=ReviewRating.objects.filter(product=product)
+    # print(reviews)
     context={
         'sitem':product,
-        # 'reviews':reviews
+        # 'review':review
     }
     return render(request,"home/productView.html",context)
 
 def search(request):
     query=request.GET['search_kw']
-    
     product=Product.objects.annotate(search=SearchVector('product_name','category__category_name')).filter(search=query)
     product_count=product.count()
     context={
@@ -50,11 +53,27 @@ def sellProducts(request):
         price=request.POST['price']
         discount=request.POST['discount']
         product_image=request.FILES['product_image']
-
         category=Category.objects.get(category_name=category)
 
         product=Product(product_name=product_name,category=category,available_quantity=available_quantity,user=request.user,
         quantity=quantity,min_quantity_to_fix_price=min_quantity,price_for_min_quantity=price,discount=discount,product_image=product_image)
+        product.save()
+        try:
+            product.product_image1=request.FILES['product_image1']
+        except:
+            pass
+        try:
+            product.product_image2=request.FILES['product_image2']
+        except:
+            pass
+        try:
+            product.product_image3=request.FILES['product_image3']
+        except:
+            pass
+        try:
+            product.product_image4=request.FILES['product_image4']
+        except:
+            pass
         product.save()
         return redirect('deliveryDetails')
     else:
@@ -135,7 +154,7 @@ def cartnew(request, total=0, quantity=0):
             print(cart_items)
         
         for cart_item in cart_items:
-            total += (cart_item.product.price_for_min_quantity * cart_item.quantity)
+            total += (cart_item.product.discount * cart_item.quantity)
             quantity += cart_item.quantity
         
         grand_total = total
@@ -164,6 +183,7 @@ def checkout(request):
         quantity=0
         if request.user.is_authenticated:
             cart = Cart.objects.get(user=request.user)
+        
             print(cart)
             cart_items = CartItem.objects.filter(user=request.user,cart=cart)
            
@@ -208,3 +228,39 @@ def submit_review(request, product_id):
                 data.save()
                 messages.success(request, 'Thank you! Your review has been submitted.')
                 return redirect(url)
+            
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        message = request.POST['message']
+        contact = Contact(name=name, email=email, phone=phone, message=message)
+        contact.save()
+        messages.success(request, 'Thank you! Your message has been submitted.')
+        return redirect('/')
+    return render(request,"home.html")
+
+
+def farmer_requests(request):
+    op=OrderProduct.objects.filter(product__user=request.user,ordered=False)
+    print(":::::::::::::::::::")
+    context={
+        'op':op,
+    }
+    return render(request,"dashboards/farmer_db.html",context)
+
+def confirm_otp(request,id):
+    print(">>>>>>>>>>>>>>>>>>>>>>>>")
+    op=OrderProduct.objects.get(id=id)
+    if request.method=="POST":
+        enteredopt=request.POST['otp']
+        if enteredopt==op.order.deliver_otp:
+            op.ordered=True
+            op.save()
+    
+    o=len(OrderProduct.objects.filter(id=op.order.id,ordered=False))
+    if o==0:
+        op.order.ordered=True
+        op.order.save()
+    return redirect('farmer_requests')

@@ -15,6 +15,7 @@ admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(Payment)
 admin.site.register(ReviewRating)
+admin.site.register(Contact)
 
 
 

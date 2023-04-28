@@ -12,8 +12,12 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav  mb-2 mb-lg-0 ms-auto">
             <li class="nav-item mx-2">
+              <a class="nav-link nav-text1" href="{% url 'order_history' %}">My Orders</a>
+            </li>
+            <li class="nav-item mx-2">
               <a class="nav-link nav-text1" href="{% url 'sellProducts' %}">Sell Products</a>
             </li>
+
             <li class="nav-item mx-2 me-4">
               <a class="nav-link nav-text1" href="{%  url 'cartnew' %}"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
               {% comment %} <a href="{% url 'cartnew' %}" class="widget-header pl-3 ml-3">

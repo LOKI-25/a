@@ -78,11 +78,14 @@
           <dd class="text-right text-dark b"><strong>₹ {{grand_total}}</strong></dd>
         </dl>
         <hr>
+        
+        {% if grand_total %}
         <p class="text-center mb-3">
             <img src="{% static './images/payments.png' %}" height="26">
         </p>
         <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
-        <a href="{% url 'home' %}" class="btn btn-light btn-block">Continue Shopping</a>
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn btn-success btn-block">Continue Shopping</a>
     </div> <!-- card-body.// -->
     </div> <!-- card.// -->
 </div>

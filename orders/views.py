@@ -5,9 +5,11 @@ from django.shortcuts import render,redirect,get_object_or_404
 from .models import *
 from twilio.rest import Client
 from unicodedata import category
-
+import random
 import datetime
 import json
+from django.core.mail import send_mail
+
 
 
 # Create your views here.
@@ -24,11 +26,16 @@ def payments(request):
         payment_method = body['payment_method'],
         amount_paid = order.order_total,
         status = body['status'],
+
     )
     payment.save()
 
     order.payment = payment
     order.is_ordered = True
+    otp = str(random.randint(1000 , 9999))
+    order.deliver_otp = otp
+
+
     order.save()
 
     # Move the cart items to Order Product table
@@ -42,7 +49,7 @@ def payments(request):
         orderproduct.product_id = item.product.id
         orderproduct.quantity = item.quantity
         orderproduct.product_price = item.product.price_for_min_quantity
-        orderproduct.ordered = True
+        orderproduct.ordered = False
         orderproduct.save()
         # Reduce the quantity of the sold products
         product = Product.objects.get(id=item.product_id)
@@ -65,19 +72,22 @@ def payments(request):
     # Send order number and transaction id back to sendData method via JsonResponse
     def send_order(mobile):
         print("FUNCTION CALLED")
-        # account_sid = 'AC5da717c5d9ef46b543a1dd7ef811d0c9'
-        # auth_token = 'f9884ec91a0034fceefbe67e7b32a7d4'
+        account_sid = ''
+        auth_token = ''
+
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
-                                                        body=f'Your order is placed successfully',
-                                                        from_='+15739953871',
+                                                        body=f'Your order is placed successfully.Your deliver time otp is '+otp,
+                                                        from_='',
                                                         to=f'+91{mobile}')
 
         print(message.body)
         return None
     print(order.phone)
+    print("||||||||||||||||||",order.email)
     send_order(order.phone)
+    send_mail('E-Farm',f'Your order is placed successfully.Your deliver time otp is '+otp,'plokeshn252002@gmail.com',[order.email],fail_silently=False)
 
     data = {
         'order_number': order.order_number,
@@ -158,7 +168,9 @@ def order_complete(request):
         for i in ordered_products:
             print(i.product_price, i.quantity)
             subtotal += i.product_price * i.quantity
-
+        if not transID:
+            transID = order.payment.payment_id
+            
         payment = Payment.objects.get(payment_id=transID)
 
         context = {
@@ -172,3 +184,43 @@ def order_complete(request):
         return render(request, 'payments/order_complete.html', context)
     except (Payment.DoesNotExist, Order.DoesNotExist):
         return redirect('home')
+    
+
+def invoice(request,id):
+    order = Order.objects.get(id=id,is_ordered=True)
+    try:
+        ordered_products = OrderProduct.objects.filter(order_id=order.id)
+        print("|||||||||||||||||||||",ordered_products)
+
+        subtotal = 0
+        for i in ordered_products:
+            print(i.product_price, i.quantity)
+            subtotal += i.product_price * i.quantity
+        
+            transID = order.payment.payment_id
+            
+        payment = Payment.objects.get(payment_id=transID)
+
+        context = {
+            'order': order,
+            'ordered_products': ordered_products,
+            'order_number': order.order_number,
+            'transID': payment.payment_id,
+            'payment': payment,
+            'subtotal': subtotal,
+        }
+        return render(request, 'payments/order_complete.html', context)
+    except (Payment.DoesNotExist, Order.DoesNotExist):
+        return redirect('home')
+    
+
+def order_history(request):
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'orders/order_history.html', context)
+
+
+
+
