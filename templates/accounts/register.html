@@ -6,16 +6,16 @@
             <div class="col-12 col-lg-9 col-xl-7">
                 <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
                     <div class="card-body p-4 p-md-5">
-                        {% if success %}
-                        {% for message in messages%}
-                        <div class="alert alert-success" role="alert">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{class}}" role="alert">
                             {{message}}
                             <a href="{% url 'register' %}" class="alert-link">Register again</a>
                         </div>
                         {% endfor %}
                         {% endif %}
                         <h3 class="mb-4 pb-2 pb-md-0 mb-md-5" align="center">Sign up</h3>
-                        <form action="register" method="post">
+                        <form method="post">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col mb-4">
@@ -142,7 +142,7 @@
                                     <input class="btn btn-success btn-lg" type="submit" value="Submit" />
                                 </div>-->
 
-                        </form>
+                        
                     </div>
                 </div>
             </div>

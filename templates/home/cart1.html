@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
 {% load static %}
-   <section style="text-align: center;margin-top:5%">
+   <section style="text-align: center;margin-top:8%">
     <div class="container-lg">
         <div class="row justify-content-center align-items-center">
             <div class="col-12 col-lg-9 col-xl-7">
@@ -29,8 +29,8 @@
             </div>
             <div class="col" style="margin-top:40px;text-align: left;">
                 <h5></h5>
-                <h5>Price:₹{{item.product.price_for_min_quantity}}</h5>
-                <h5>Discount:{{item.product.discount}}</h5><br>
+                <h5>Price:₹<del>{{item.product.price_for_min_quantity}}</del></h5>
+                <h5>Discount:₹{{item.product.discount}}</h5><br>
                 <a href="{% url 'remove_cart_item' item.product.id item.id %}" class="btn btn-danger">Remove</a>
                
             </div>

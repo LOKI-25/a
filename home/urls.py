@@ -11,7 +11,6 @@ urlpatterns = [
     path('search',views.search,name='search') ,
     path('sellProducts/',views.sellProducts,name="sellProducts") ,
     path('confirm_order/', views.confirm_otp, name='confirm_order'),
-
     path('deliveryDetails/',views.deliveryDetails,name="deliveryDetails"),
     path('cold',views.cold,name="cold") ,
     path('cartnew/',views.cartnew,name='cartnew'),
@@ -24,10 +23,6 @@ urlpatterns = [
     path('<slug:slug>/',views.productView,name='productView') ,
     path('submit_review/<int:product_id>/', views.submit_review, name='submit_review'),
     path('confirm_order/<str:id>', views.confirm_otp, name='confirm_order'),
-
-
-
-    
 
 ]
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

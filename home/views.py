@@ -14,6 +14,8 @@ def home(request):
 
 def product(request,slug,id):
     product=Product.objects.filter(category__slug=slug,category__id=id)
+    product=product.filter(available_quantity__gt=0)
+
     product_count=product.count()
     context={
         'sitem':product,
@@ -23,8 +25,8 @@ def product(request,slug,id):
 
 def productView(request,slug):
     product=Product.objects.filter(product_slug=slug).order_by('discount')
+
     # review=product.average_rating()
-    print("}}}}}}}}",product)
     # reviews=ReviewRating.objects.filter(product=product)
     # print(reviews)
     context={
@@ -54,10 +56,9 @@ def sellProducts(request):
         discount=request.POST['discount']
         product_image=request.FILES['product_image']
         category=Category.objects.get(category_name=category)
-
         product=Product(product_name=product_name,category=category,available_quantity=available_quantity,user=request.user,
         quantity=quantity,min_quantity_to_fix_price=min_quantity,price_for_min_quantity=price,discount=discount,product_image=product_image)
-        product.save()
+    
         try:
             product.product_image1=request.FILES['product_image1']
         except:
@@ -87,16 +88,12 @@ def cold(request):
     return render(request,"home/cold.html")
 def add_cart(request, product_id):
         product = Product.objects.get(id=product_id)
-        print(product)
         user=request.user
         try:
-            cart = Cart.objects.get(user=request.user) # get the cart using the cart_id present in the session
-            print(cart)
-            
+            cart = Cart.objects.get(user=user) # get the cart using the cart_id present       
         except Cart.DoesNotExist:
             print("cart doesnt exizst")
-            cart = Cart.objects.create(user=user)
-            cart.save()
+            cart = Cart.objects.create(user=user) # create a new cart if no cart is assigned to the session
         try:
                 item = CartItem.objects.get(product=product, cart=cart)
                 item.quantity += 1
@@ -106,7 +103,6 @@ def add_cart(request, product_id):
                 print("cart item doesnt exizst")
                 item = CartItem.objects.create(product=product, quantity=1, cart=cart,user=request.user)
                 item.save()
-        print(item)
         return redirect('cartnew')
         
 
@@ -115,11 +111,8 @@ def remove_cart(request, product_id, cart_item_id):
 
     product = get_object_or_404(Product, id=product_id)
     try:
-        if request.user.is_authenticated:
-            cart_item = CartItem.objects.get(product=product, user=request.user)
-        else:
-            cart = Cart.objects.get(user=request.user)
-            cart_item = CartItem.objects.get(product=product, cart=cart)
+        cart = Cart.objects.get(user=request.user)
+        cart_item = CartItem.objects.get(product=product, cart=cart)
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
@@ -241,17 +234,17 @@ def contact(request):
         return redirect('/')
     return render(request,"home.html")
 
-
+# Farmers Dashboard
 def farmer_requests(request):
     op=OrderProduct.objects.filter(product__user=request.user,ordered=False)
-    print(":::::::::::::::::::")
     context={
         'op':op,
     }
     return render(request,"dashboards/farmer_db.html",context)
 
+
+# check ones there is a confusion
 def confirm_otp(request,id):
-    print(">>>>>>>>>>>>>>>>>>>>>>>>")
     op=OrderProduct.objects.get(id=id)
     if request.method=="POST":
         enteredopt=request.POST['otp']

@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 # from home.models import *
@@ -8,6 +7,7 @@ from unicodedata import category
 import random
 import datetime
 import json
+from efarming import settings
 from django.core.mail import send_mail
 
 
@@ -18,7 +18,6 @@ from django.core.mail import send_mail
 def payments(request):
     body = json.loads(request.body)
     order = Order.objects.get(user=request.user, is_ordered=False, order_number=body['orderID'])
-
     # Store transaction details inside Payment model
     payment = Payment(
         user = request.user,
@@ -26,16 +25,12 @@ def payments(request):
         payment_method = body['payment_method'],
         amount_paid = order.order_total,
         status = body['status'],
-
     )
     payment.save()
-
     order.payment = payment
     order.is_ordered = True
     otp = str(random.randint(1000 , 9999))
     order.deliver_otp = otp
-
-
     order.save()
 
     # Move the cart items to Order Product table
@@ -72,22 +67,20 @@ def payments(request):
     # Send order number and transaction id back to sendData method via JsonResponse
     def send_order(mobile):
         print("FUNCTION CALLED")
-        account_sid = ''
-        auth_token = ''
+        account_sid = settings.TWILIO_ACCOUNT_SID
+        auth_token = settings.TWILIO_AUTH_TOKEN
 
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
                                                         body=f'Your order is placed successfully.Your deliver time otp is '+otp,
-                                                        from_='',
+                                                        from_=settings.TWILIO_PHONE_NUMBER,
                                                         to=f'+91{mobile}')
 
         print(message.body)
         return None
-    print(order.phone)
-    print("||||||||||||||||||",order.email)
-    send_order(order.phone)
-    send_mail('E-Farm',f'Your order is placed successfully.Your deliver time otp is '+otp,'plokeshn252002@gmail.com',[order.email],fail_silently=False)
+    # send_order(order.phone)
+    # send_mail('E-Farm',f'Your order is placed successfully.Your deliver time otp is '+otp,'plokeshn252002@gmail.com',[order.email],fail_silently=False)
 
     data = {
         'order_number': order.order_number,
@@ -96,9 +89,7 @@ def payments(request):
     return JsonResponse(data)
 
 def place_order(request, total=0, quantity=0):
-    print("place_ordeer invoked")
     current_user = request.user
-
     # If the cart count is less than or equal to 0, then redirect back to shop
     cart_items = CartItem.objects.filter(user=current_user)
     # cart_count = len(cart_items)
@@ -106,10 +97,7 @@ def place_order(request, total=0, quantity=0):
     #     return redirect('store')
 
     grand_total = 0
-   
-
     for cart_item in cart_items:
-        print("}}}}}}}}}}}}}}}}}}",cart_item.product.discount,   cart_item.quantity)
         total += (cart_item.product.discount * cart_item.quantity)
         quantity += cart_item.quantity
     grand_total = total 
@@ -133,17 +121,11 @@ def place_order(request, total=0, quantity=0):
             current_date = d.strftime("%Y%m%d") #20210305
             order_number = current_date
             data.order_number = order_number
-            print(data.id)
             data.save()
             data.order_number = order_number+str(data.id)
-            print(data.id)
-
             data.save()
 
             orders = Order.objects.get(user=current_user, is_ordered=False,id=data.id)
-            print(orders.name)
-            print(cart_items)
-            
             context = {
                         'order': orders,
                         'cart_items': cart_items,
@@ -158,16 +140,12 @@ def place_order(request, total=0, quantity=0):
 def order_complete(request):
     order_number = request.GET.get('order_number')
     transID = request.GET.get('payment_id')
-
     try:
         order = Order.objects.get(order_number=order_number, is_ordered=True)
         ordered_products = OrderProduct.objects.filter(order_id=order.id)
-        print("|||||||||||||||||||||",ordered_products)
-
         subtotal = 0
         for i in ordered_products:
-            print(i.product_price, i.quantity)
-            subtotal += i.product_price * i.quantity
+            subtotal += i.product.discount * i.quantity
         if not transID:
             transID = order.payment.payment_id
             
@@ -186,21 +164,16 @@ def order_complete(request):
         return redirect('home')
     
 
+
 def invoice(request,id):
     order = Order.objects.get(id=id,is_ordered=True)
     try:
         ordered_products = OrderProduct.objects.filter(order_id=order.id)
-        print("|||||||||||||||||||||",ordered_products)
-
         subtotal = 0
         for i in ordered_products:
-            print(i.product_price, i.quantity)
-            subtotal += i.product_price * i.quantity
-        
+            subtotal += i.product.discount * i.quantity
             transID = order.payment.payment_id
-            
         payment = Payment.objects.get(payment_id=transID)
-
         context = {
             'order': order,
             'ordered_products': ordered_products,
@@ -209,6 +182,7 @@ def invoice(request,id):
             'payment': payment,
             'subtotal': subtotal,
         }
+        
         return render(request, 'payments/order_complete.html', context)
     except (Payment.DoesNotExist, Order.DoesNotExist):
         return redirect('home')
@@ -220,7 +194,3 @@ def order_history(request):
         'orders': orders,
     }
     return render(request, 'orders/order_history.html', context)
-
-
-
-

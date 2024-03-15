@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'home',
     'accounts',
-    'payments',
     'orders',
 ]
 
@@ -84,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'efarming_db',
         'USER':'postgres',
-        'PASSWORD':'*****',
+        'PASSWORD':'lokesh',
         'HOST':'localhost',
     }
 }
@@ -140,13 +139,19 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR/ "media"
 
 
+
+
+
 cache.clear()
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = '' # Replace with your email address
-EMAIL_HOST_PASSWORD = '' # Replace with your email password or app-specific password
+EMAIL_HOST_USER = 'plokeshn252002@gmail.com' # Replace with your email address
+EMAIL_HOST_PASSWORD = 'ilwderymtfbguqjh' # Replace with your email password or app-specific password
+TWILIO_ACCOUNT_SID = 'ACef968d01c4c3e4de737d7f30ceea0224' # Replace with your Twilio SID
+TWILIO_AUTH_TOKEN = '8cd44e336da52df9b4ec42e8f5c08215' # Replace with your Twilio Auth Token
+TWILIO_PHONE_NUMBER = '+12706123070' # Replace with your Twilio phone number
 
 

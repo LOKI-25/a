@@ -35,10 +35,10 @@ class Product(models.Model):
     product_image2=models.ImageField(upload_to='product_images2', blank=True, null=True)
     product_image3=models.ImageField(upload_to='product_images3', blank=True, null=True)
     product_image4=models.ImageField(upload_to='product_images4', blank=True, null=True)
-
     is_available=models.BooleanField(default=True)
     created_date=models.DateTimeField(auto_now_add=True)
     modified_date=models.DateTimeField(auto_now=True)
+    
     def save(self,*args,**kwargs):
         self.product_slug=slugify(self.product_name)
         super(Product,self).save(*args,**kwargs)
